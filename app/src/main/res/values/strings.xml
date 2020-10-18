@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">SpigotCaseStudy</string>
+    <string name="url_button_hint">https://…</string>
+    <string name="get_data_button">PARSE</string>
+    <string name="post_data_button">POST</string>
+    <string name="endpoint">https://casestudy.alltheapps.org/mobile/install</string>
+    <string name="accept">OK</string>
+    <string name="title">API Response</string>
+    <string name="message"></string>
+</resources>
