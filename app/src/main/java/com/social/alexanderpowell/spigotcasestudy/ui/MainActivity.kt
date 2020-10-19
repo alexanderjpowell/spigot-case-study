@@ -5,7 +5,6 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
-import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,12 +12,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.Request
 import com.android.volley.toolbox.JsonObjectRequest
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
 import com.social.alexanderpowell.spigotcasestudy.Injection
 import com.social.alexanderpowell.spigotcasestudy.R
 import com.social.alexanderpowell.spigotcasestudy.http.SingletonRequestQueue
+import com.social.alexanderpowell.spigotcasestudy.persistence.Device
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -45,8 +44,8 @@ class MainActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         viewModelFactory = Injection.provideViewModelFactory(this)
-        get_button.setOnClickListener { parseUrl() }
-        post_button.setOnClickListener { post() }
+        get_button.setOnClickListener { parseUrlButtonClick() }
+        post_button.setOnClickListener { postButtonClick() }
     }
 
     override fun onStart() {
@@ -66,10 +65,10 @@ class MainActivity : AppCompatActivity() {
         SingletonRequestQueue.getInstance(this).cancelRequestQueue(requestTag)
     }
 
-    private fun parseUrl() {
-        val url: String = url_edit_text.text.toString()
+    private fun parseUrlButtonClick() {
+        //val url: String = url_edit_text.text.toString()
         //val url: String = "https://m.alltheapps.org/get/app?userId=B1C92850-8202-44AC-B514-1849569F37B6&implementationid=cl-and-erp&trafficSource=erp&userClass=20200101"
-        //val url: String = "https%3A%2F%2Fm.alltheapps.org%2Fget%2Fapp%3FuserId%3DB1C92850-8202-44AC-B514-1849569F37B6%26implementationid%3Dcl-and-erp%26trafficSource%3Derp%26userClass%3D20200101"
+        val url: String = "https%3A%2F%2Fm.alltheapps.org%2Fget%2Fapp%3FuserId%3DB1C92850-8202-44AC-B514-1849569F37B6%26implementationid%3Dcl-and-erp%26trafficSource%3Derp%26userClass%3D20200101"
         val decodedUrl = URLDecoder.decode(url, "utf-8")
         val deviceId: String = Settings.Secure.getString(
             baseContext.contentResolver,
@@ -82,7 +81,7 @@ class MainActivity : AppCompatActivity() {
         paramsList.map {
             params.put(it.mParameter, it.mValue)
         }
-        params.put("Test Key1", "Test Value1")
+        /*params.put("Test Key1", "Test Value1")
         params.put("Test Key2", "Test Value2")
         params.put("Test Key3", "Test Value3")
         params.put("Test Key4", "Test Value4")
@@ -96,7 +95,7 @@ class MainActivity : AppCompatActivity() {
         params.put("Test Key12", "Test Value12")
         params.put("Test Key13", "Test Value13")
         params.put("Test Key14", "Test Value14")
-        params.put("Test Key15", "Test Value15")
+        params.put("Test Key15", "Test Value15")*/
         get_button.isEnabled = false
         disposable.add(
             viewModel.updateDeviceData(deviceId, manufacturer, model, params)
@@ -107,19 +106,34 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-    private fun post() {
+    private fun postButtonClick() {
+        disposable.add(
+            viewModel.deviceData()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ issueRequest(it) },
+                    { error -> Log.e(TAG, "Unable to get data", error) })
+        )
+    }
+
+    private fun issueRequest(device: Device) {
         val jsonBody = JSONObject()
-        //jsonBody.put("test", "value")
+        jsonBody.put("device_id", device.device_id)
+        jsonBody.put("manufacturer", device.manufacturer)
+        jsonBody.put("model", device.model)
+        device.parameters.map {
+            jsonBody.put(it.key, it.value)
+        }
         val stringRequest = JsonObjectRequest(
-            Request.Method.POST, getString(R.string.endpoint), jsonBody,
-            { response ->
-                displayDialog(response.toString())
-                post_button.isEnabled = true
-            },
-            {
-                Log.d(TAG, "That didn't work!")
-                post_button.isEnabled = true
-            })
+                Request.Method.POST, getString(R.string.endpoint), jsonBody,
+                { response ->
+                    displayDialog(response.toString())
+                    post_button.isEnabled = true
+                },
+                {
+                    Log.d(TAG, "That didn't work!")
+                    post_button.isEnabled = true
+                })
         stringRequest.tag = requestTag
         post_button.isEnabled = false
         SingletonRequestQueue.getInstance(this).addToRequestQueue(stringRequest)
