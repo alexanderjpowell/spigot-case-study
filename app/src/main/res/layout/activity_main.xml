@@ -21,7 +21,8 @@
             android:id="@+id/url_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="25sp"/>
+            android:textSize="25sp"
+            android:maxLines="2"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -38,9 +39,9 @@
         app:layout_constraintTop_toBottomOf="@id/url_text_input_layout"
         app:layout_constraintBottom_toTopOf="@id/card_view"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/post_button"/>
+        app:layout_constraintEnd_toEndOf="parent"/>
 
-    <com.google.android.material.button.MaterialButton
+    <!--<com.google.android.material.button.MaterialButton
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:id="@+id/post_button"
         android:layout_width="0dp"
@@ -53,24 +54,45 @@
         app:layout_constraintTop_toBottomOf="@id/url_text_input_layout"
         app:layout_constraintBottom_toTopOf="@id/card_view"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/get_button"/>
+        app:layout_constraintStart_toEndOf="@+id/get_button"/>-->
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/card_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/get_button">
+        android:layout_height="0dp"
+        app:layout_constrainedHeight="true"
+        app:layout_constraintVertical_weight="1"
+        app:layout_constraintTop_toBottomOf="@+id/get_button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHeight_default="spread"
+        app:cardUseCompatPadding="true">
 
-        <ScrollView
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraint"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_view"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                app:layout_constrainedHeight="true"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/post_button" />
 
-        </ScrollView>
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.MaterialComponents.Button"
+                android:id="@+id/post_button"
+                app:icon="@drawable/ic_baseline_cloud_upload_24"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:padding="10dp"
+                android:text="@string/post_data_button"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </com.google.android.material.card.MaterialCardView>
 

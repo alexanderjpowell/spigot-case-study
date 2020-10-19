@@ -5,10 +5,11 @@ import com.social.alexanderpowell.spigotcasestudy.persistence.Device
 import com.social.alexanderpowell.spigotcasestudy.persistence.DeviceDao
 import io.reactivex.Completable
 import io.reactivex.Flowable
+import io.reactivex.Single
 
 class DeviceViewModel(private val dataSource: DeviceDao) : ViewModel() {
 
-    fun deviceId(): Flowable<String> {
+    /*fun deviceId(): Flowable<String> {
         return dataSource.getDeviceById(USER_ID)
             .map { device -> device.id }
     }
@@ -21,14 +22,14 @@ class DeviceViewModel(private val dataSource: DeviceDao) : ViewModel() {
     fun deviceModel(): Flowable<String> {
         return dataSource.getDeviceById(USER_ID)
                 .map { device -> device.model }
-    }
+    }*/
 
     fun updateDeviceData(deviceId: String, manufacturer: String, model: String, parameters: HashMap<String, String>): Completable {
         val device = Device(USER_ID, deviceId, manufacturer, model, parameters)
         return dataSource.insertDevice(device)
     }
 
-    fun deviceData(): Flowable<Device> {
+    fun deviceData(): Single<Device> {
         return dataSource.getDeviceById(USER_ID)
     }
 

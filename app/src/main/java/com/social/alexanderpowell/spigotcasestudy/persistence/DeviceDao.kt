@@ -6,12 +6,13 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import io.reactivex.Completable
 import io.reactivex.Flowable
+import io.reactivex.Single
 
 @Dao
 interface DeviceDao {
 
     @Query("SELECT * FROM Devices WHERE id = :id")
-    fun getDeviceById(id: String): Flowable<Device>
+    fun getDeviceById(id: String): Single<Device>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertDevice(user: Device): Completable
