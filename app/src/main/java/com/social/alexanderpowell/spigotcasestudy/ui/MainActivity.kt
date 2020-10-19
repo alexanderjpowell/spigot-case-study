@@ -118,7 +118,6 @@ class MainActivity : AppCompatActivity() {
         val stringRequest = JsonObjectRequest(
                 Request.Method.POST, getString(R.string.endpoint), jsonBody,
                 { response ->
-                    Log.d(TAG, "Request sent")
                     displayDialog(response.toString())
                     post_button.isEnabled = true
                 },
